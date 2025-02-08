@@ -557,14 +557,14 @@ class Model(QObject, ObservableProperties):
             self._layer.hide()
 
     def apply_result(self, image: Image, params: JobParams, behavior: ApplyBehavior, prefix=""):
-        if image.extent != params.bounds.extent:
-            image = Image.crop(image, Bounds(0, 0, *params.bounds.extent))
+        # if image.extent != params.bounds.extent:
+        #     image = Image.crop(image, Bounds(0, 0, *params.bounds.extent))
         if len(params.regions) == 0:
             if behavior is ApplyBehavior.replace:
                 self.layers.update_layer_image(self.layers.active, image, params.bounds)
             else:
                 name = f"{prefix}{trim_text(params.name, 200)} ({params.seed})"
-                self.layers.create(name, image, params.bounds)
+                self.layers.create(name, image, Bounds(0, 0, *image.extent))
         else:  # apply to regions
             with RestoreActiveLayer(self.layers) as restore:
                 active_id = Region.link_target(self.layers.active).id_string
